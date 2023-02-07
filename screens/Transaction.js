@@ -186,6 +186,29 @@ export default class TransactionScreen extends Component {
     });
   };
 
+  
+  
+    checkBookAvailability = async bookId => {
+    const bookRef = await db
+      .collection("books")
+      .where("book_id", "==", bookId)
+      .get();
+
+    var transactionType = "";
+    if (bookRef.docs.length == 0) {
+      transactionType = false;
+    } else {
+      bookRef.docs.map(doc => {
+        //se o livro estiver disponível, o tipo de transação será "issue" (entregue)
+        // caso contrário, será "return" (retornado)
+        transactionType = doc.data().is_book_available ? "issue" : "return";
+      });
+    }
+
+    return transactionType;
+  };
+  
+  
   render() {
     const { bookId, studentId, domState, scanned } = this.state;
     if (domState !== "normal") {
